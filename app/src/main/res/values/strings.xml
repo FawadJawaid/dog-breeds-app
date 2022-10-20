@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Dog Breeds</string>
+    <string name="text_home">Home</string>
+    <string name="text_details">Details</string>
+    <string name="see_favourites">Tap here to see your favourites</string>
+    <string name="text_favourites">Favourites</string>
+    <string name="text_sub_breeds">Sub Breeds</string>
+    <string name="text_no_sub_breeds">No sub breeds</string>
+    <string name="text_add_to_favourite">Add to Favourite</string>
+    <string name="text_remove_from_favourite">Remove from Favourite</string>
+    <string name="text_no_favourites">You don\'t have any favourites</string>
+    <string name="text_retry">Retry</string>
+    <string name="text_no_internet_connection">No internet, please connect and retry</string>
+</resources>
