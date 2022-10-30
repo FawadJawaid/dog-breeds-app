@@ -55,7 +55,6 @@ class FavouriteDogBreedsUseCaseTest {
     @Test
     fun `add to favourites`() = runTest {
         // given
-        val mockFavouriteDogBreeds = mockk<List<DogBreed>>(relaxed = true)
         val name = "african"
         val isFavourite = true
 

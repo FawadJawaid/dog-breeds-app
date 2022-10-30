@@ -71,20 +71,4 @@ class DogBreedsListViewModelTest {
         viewModel.uiState.dogBreeds?.size shouldBe 0
         viewModel.uiState.isLoading shouldBe false
     }
-
-    /*@Test
-    fun `initialize then dog breeds is loading`() = runTest {
-        // given
-        every { dogBreedsUseCase.getDogBreeds() } returns flow {
-            emit(emptyList())
-        }
-
-        // when
-        // view model is initialized
-        viewModel = DogBreedsListViewModel(dogBreedsUseCase)
-
-        // then
-        viewModel.uiState.dogBreeds shouldBe emptyList()
-        viewModel.uiState.isLoading shouldBe true
-    }*/
 }
