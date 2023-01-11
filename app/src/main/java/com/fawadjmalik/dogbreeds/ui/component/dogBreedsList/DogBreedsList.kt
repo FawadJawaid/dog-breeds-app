@@ -45,7 +45,7 @@ fun DogBreedsList(
         }
 
         item {
-            if (dogBreedsListViewModel.uiState.isLoading) {
+            if (dogBreedsListViewModel.uiState.value.isLoading) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -61,7 +61,7 @@ fun DogBreedsList(
             noInternetConnectionView(dogBreedsListViewModel = dogBreedsListViewModel)
         }
 
-        dogBreedsListViewModel.uiState.dogBreeds?.let { list ->
+        dogBreedsListViewModel.uiState.value.dogBreeds?.let { list ->
             items(list) {
                 ItemDogCard(
                     it,
@@ -100,7 +100,7 @@ fun goToFavouritesButton(navController: NavHostController) {
 @Composable
 fun noInternetConnectionView(dogBreedsListViewModel: DogBreedsListViewModel) {
     val context = LocalContext.current
-    if (!isConnected(context) && dogBreedsListViewModel.uiState.dogBreeds?.isEmpty() == true) {
+    if (!isConnected(context) && dogBreedsListViewModel.uiState.value.dogBreeds?.isEmpty() == true) {
 
         Column(
             modifier = Modifier

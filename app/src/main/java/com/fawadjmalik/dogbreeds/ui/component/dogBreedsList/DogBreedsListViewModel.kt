@@ -1,8 +1,7 @@
 package com.fawadjmalik.dogbreeds.ui.component.dogBreedsList
 
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.fawadjmalik.dogbreeds.domain.model.DogBreed
 import com.fawadjmalik.dogbreeds.domain.usecase.dogBreeds.DogBreedsUseCase
@@ -23,20 +22,24 @@ import javax.inject.Inject
 class DogBreedsListViewModel @Inject constructor(
     private val dogBreedsUseCase: DogBreedsUseCase
 ) : BaseViewModel() {
-    var uiState by mutableStateOf(DogBreedsListUiState())
+    private val _uiState = mutableStateOf(DogBreedsListUiState())
+    val uiState: State<DogBreedsListUiState> = _uiState
 
     init {
         getDogBreedsList()
     }
 
     fun getDogBreedsList() {
+        // CoroutineScope tied to this ViewModel.
+        // This scope will be canceled when ViewModel will be cleared, i.e ViewModel.onCleared is called
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true)
             dogBreedsUseCase.getDogBreeds().collect { result ->
-                uiState = if (result.isNotEmpty()) {
-                    uiState.copy(
+                _uiState.value = if (result.isNotEmpty()) {
+                    _uiState.value.copy(
                         isLoading = false,
-                        dogBreeds = result.map {
+                        dogBreeds = result.map { // Returns a list containing the results of applying
+                            // the given transform function to each element in the original collection.
                             DogBreed(
                                 name = it.name.capitalizeFirstLetter(),
                                 subBreeds = it.subBreeds,
@@ -45,7 +48,7 @@ class DogBreedsListViewModel @Inject constructor(
                             )
                         })
                 } else {
-                    uiState.copy(isLoading = false, dogBreeds = result)
+                    _uiState.value.copy(isLoading = false, dogBreeds = result)
                 }
             }
         }
