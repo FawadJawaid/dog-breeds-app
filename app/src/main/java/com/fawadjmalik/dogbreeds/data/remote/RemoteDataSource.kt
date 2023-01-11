@@ -1,10 +1,11 @@
 package com.fawadjmalik.dogbreeds.data.remote
 
+import android.util.Log
 import com.fawadjmalik.dogbreeds.data.Resource
 import com.fawadjmalik.dogbreeds.data.remote.dto.DogBreedResponse
+import com.fawadjmalik.dogbreeds.data.remote.helper.DogBreedWithSubBreeds
 import com.fawadjmalik.dogbreeds.data.remote.service.DogBreedsApi
 import com.fawadjmalik.dogbreeds.domain.model.DogBreed
-import com.fawadjmalik.dogbreeds.data.remote.helper.DogBreedWithSubBreeds
 import com.fawadjmalik.dogbreeds.utils.Constants.COMMA
 import com.fawadjmalik.dogbreeds.utils.Constants.DEFAULT_IS_FAVOURITE
 import com.fawadjmalik.dogbreeds.utils.extensions.asyncAll
@@ -24,37 +25,41 @@ constructor(private val api: DogBreedsApi) : RemoteSource {
 
     override suspend fun getDogBreeds(): Resource<List<DogBreed>> {
         //No need to change context to Dispatchers.IO as Retrofit handles that automatically.
-        val dogBreedList = mutableListOf<DogBreed>()
-        val res = api.fetchDogBreeds()
-        val dogBreedNameWithSubBreedList = mutableListOf<DogBreedWithSubBreeds>()
+        try {
+            val dogBreedList = mutableListOf<DogBreed>()
+            val res = api.fetchDogBreeds()
+            val dogBreedNameWithSubBreedList = mutableListOf<DogBreedWithSubBreeds>()
 
-        when (res.isSuccessful) {
-            true -> {
-                res.body()?.let { body ->
-                    if (body.status == DogBreedResponse.SUCCESS_STATUS) {
-                        body.message.entries.forEach {
-                            dogBreedNameWithSubBreedList.add(
-                                DogBreedWithSubBreeds(
-                                    it.key,
-                                    it.value.joinToString(COMMA)
+            when (res.isSuccessful) {
+                true -> {
+                    res.body()?.let { body ->
+                        if (body.status == DogBreedResponse.SUCCESS_STATUS) {
+                            body.message.entries.forEach {
+                                dogBreedNameWithSubBreedList.add(
+                                    DogBreedWithSubBreeds(
+                                        it.key,
+                                        it.value.joinToString(COMMA) //Joining all the subbreeds by comma
+                                    )
                                 )
-                            )
-                        }
-                        withContext(Dispatchers.IO) {
-                            prepareDogsBreedListWithImage(
-                                this,
-                                dogBreedNameWithSubBreedList,
-                                dogBreedList
-                            )
-                        }
-                        return Resource.Success(data = dogBreedList)
-                    } else return Resource.DataError(errorCode = body.code)
-                } ?: return Resource.DataError(errorCode = res.code())
+                            }
+                            withContext(Dispatchers.IO) {
+                                prepareDogsBreedListWithImage(
+                                    this,
+                                    dogBreedNameWithSubBreedList,
+                                    dogBreedList
+                                )
+                            }
+                            return Resource.Success(data = dogBreedList)
+                        } else return Resource.DataError(errorCode = body.code)
+                    } ?: return Resource.DataError(errorCode = res.code())
+                }
+                false -> return Resource.DataError(errorCode = res.code())
             }
-            false -> return Resource.DataError(errorCode = res.code())
+        } catch (e: Exception) {
+            Log.e("NETWORK_API_ERROR", "List cannot load ${e.hashCode()}")
+            return Resource.DataError(errorCode = e.hashCode())
         }
     }
-
 
     override suspend fun getDogBreedImages(breedName: String): Resource<List<String>> {
         try {
@@ -71,6 +76,7 @@ constructor(private val api: DogBreedsApi) : RemoteSource {
                 false -> return Resource.DataError(errorCode = res.code())
             }
         } catch (e: Exception) {
+            Log.e("NETWORK_API_ERROR", "Cannot get dog breed images ${e.hashCode()}")
             return Resource.DataError(errorCode = e.hashCode())
         }
     }
@@ -82,7 +88,8 @@ constructor(private val api: DogBreedsApi) : RemoteSource {
     ) {
         var iterator = 0
         scope.asyncAll(dogBreedNameWithSubBreedList) { api.fetchDogBreedSingleImage(it.name) }
-            .awaitAll()
+            .awaitAll() //Awaits for completion of given deferred values without blocking a thread and
+            // resumes normally with the list of values when all deferred computations are complete.
             .forEach { breedImageResponse ->
                 breedImageResponse.body()?.let { breedImage ->
                     dogBreedList.add(
