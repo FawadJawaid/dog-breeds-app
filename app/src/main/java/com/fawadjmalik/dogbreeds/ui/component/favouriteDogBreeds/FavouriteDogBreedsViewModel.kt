@@ -27,6 +27,8 @@ class FavouriteDogBreedsViewModel @Inject constructor(
         private set
 
     init {
+        // CoroutineScope tied to this ViewModel.
+        // This scope will be canceled when ViewModel will be cleared, i.e ViewModel.onCleared is called
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
             dogBreedsUseCase.getFavouriteDogBreeds().collect { result ->

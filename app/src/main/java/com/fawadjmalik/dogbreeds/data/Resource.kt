@@ -4,6 +4,8 @@ package com.fawadjmalik.dogbreeds.data
  * Author: Muhammad Fawad Jawaid Malik
  * A generic class that contains data and status about loading this data.
  */
+
+/** A sealed class allows you to represent constraint hierachies in which objects can only be one of the given types **/
 sealed class Resource<T>(
         val data: T? = null,
         val errorCode: Int? = null

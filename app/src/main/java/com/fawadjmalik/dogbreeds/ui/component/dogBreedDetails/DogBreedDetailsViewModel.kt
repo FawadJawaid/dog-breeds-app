@@ -35,6 +35,8 @@ class DogBreedDetailsViewModel @Inject constructor(
     }
 
     fun getDogBreedImages(name: String) {
+        // CoroutineScope tied to this ViewModel.
+        // This scope will be canceled when ViewModel will be cleared, i.e ViewModel.onCleared is called
         viewModelScope.launch {
             dogBreedImagesUseCase.getDogBreedImages(name).collect { result ->
                 handleDogBreedImagesResponse(result)
