@@ -12,12 +12,12 @@ import retrofit2.http.Path
  * This is the interface which defines the webservice for getting dog breeds info and images.
  */
 interface DogBreedsApi {
-    @GET("breeds/list/all/")
+    @GET("breeds/list/all")
     suspend fun fetchDogBreeds(): Response<DogBreedResponse>
 
-    @GET("breed/{breed_name}/images/random/4/")
+    @GET("breed/{breed_name}/images/random/4")
     suspend fun fetchDogBreedImages(@Path("breed_name") breedName: String): Response<DogBreedImagesResponse>
 
-    @GET("breed/{breed_name}/images/random/")
+    @GET("breed/{breed_name}/images/random")
     suspend fun fetchDogBreedSingleImage(@Path("breed_name") breedName: String): Response<DogBreedSingleImageResponse>
 }
