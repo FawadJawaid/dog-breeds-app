@@ -29,6 +29,7 @@ class DogBreedDetailsViewModel @Inject constructor(
     private val nameType = checkNotNull(savedStateHandle["name"]).toString()
 
     var uiState by mutableStateOf(DogBreedDetailsUiState())
+        private set
 
     init {
         getDogBreedImages(nameType.lowercase())
