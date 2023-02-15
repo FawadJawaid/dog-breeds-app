@@ -1,7 +1,8 @@
 package com.fawadjmalik.dogbreeds.ui.component.dogBreedsList
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.fawadjmalik.dogbreeds.domain.model.DogBreed
 import com.fawadjmalik.dogbreeds.domain.usecase.dogBreeds.DogBreedsUseCase
@@ -22,8 +23,8 @@ import javax.inject.Inject
 class DogBreedsListViewModel @Inject constructor(
     private val dogBreedsUseCase: DogBreedsUseCase
 ) : BaseViewModel() {
-    private val _uiState = mutableStateOf(DogBreedsListUiState())
-    val uiState: State<DogBreedsListUiState> = _uiState
+    var uiState by mutableStateOf(DogBreedsListUiState())
+        private set
 
     init {
         getDogBreedsList()
@@ -33,10 +34,10 @@ class DogBreedsListViewModel @Inject constructor(
         // CoroutineScope tied to this ViewModel.
         // This scope will be canceled when ViewModel will be cleared, i.e ViewModel.onCleared is called
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            uiState = uiState.copy(isLoading = true)
             dogBreedsUseCase.getDogBreeds().collect { result ->
-                _uiState.value = if (result.isNotEmpty()) {
-                    _uiState.value.copy(
+                uiState = if (result.isNotEmpty()) {
+                    uiState.copy(
                         isLoading = false,
                         dogBreeds = result.map { // Returns a list containing the results of applying
                             // the given transform function to each element in the original collection.
@@ -48,7 +49,7 @@ class DogBreedsListViewModel @Inject constructor(
                             )
                         })
                 } else {
-                    _uiState.value.copy(isLoading = false, dogBreeds = result)
+                    uiState.copy(isLoading = false, dogBreeds = result)
                 }
             }
         }
